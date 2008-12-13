@@ -1,5 +1,6 @@
 *.o
 *.swp
+libshs.a
 example1
 example2
 tags
