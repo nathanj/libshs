@@ -138,6 +138,7 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 				{
 					header = tmp;
 					tmp.clear();
+					p++; // read past the space (fixme)
 				}
 				else if (*p == '\r')
 				{
