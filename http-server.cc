@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+#include <cctype>
 
 namespace shs {
 
@@ -38,6 +39,9 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 	bool gotten_path = false;
 	bool gotten_querystring = false;
 	bool gotten_headers = false;
+	bool skipnext = false;
+	int chars_to_decode = 0;
+	char c[2];
 	std::string tmp, header;
 	std::string body;
 
@@ -53,7 +57,17 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 
 		while (p != data.end() && !gotten_headers)
 		{
-			if (!gotten_method)
+			if (skipnext)
+			{
+				skipnext = false;
+			}
+			else if (chars_to_decode > 0)
+			{
+				c[--chars_to_decode] = toupper(*p);
+				if (chars_to_decode == 0)
+					tmp.push_back(decode(c[1], c[0]));
+			}
+			else if (!gotten_method)
 			{
 				if (*p == ' ')
 				{
@@ -84,6 +98,11 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 					tmp.clear();
 					gotten_path = true;
 				}
+				else if (*p == '%')
+				{
+					// Decode the next two characters in the stream
+					chars_to_decode = 2;
+				}
 				else
 				{
 					tmp.push_back(*p);
@@ -111,9 +130,8 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 				}
 				else if (*p == '%')
 				{
-					// need to turn these calls into two passes
-					tmp.push_back(decode(*(p+1), *(p+2)));
-					p+=2;
+					// Decode the next two characters in the stream
+					chars_to_decode = 2;
 				}
 				else if (*p == ' ')
 				{
@@ -138,7 +156,12 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 				{
 					header = tmp;
 					tmp.clear();
-					p++; // read past the space (fixme)
+					skipnext = true; // skip past the space
+				}
+				else if (*p == '%')
+				{
+					// Decode the next two characters in the stream
+					chars_to_decode = 2;
 				}
 				else if (*p == '\r')
 				{
@@ -190,7 +213,13 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 		std::string::const_iterator p = body.begin();
 		while (p != body.end())
 		{
-			if (*p == '=')
+			if (chars_to_decode > 0)
+			{
+				c[--chars_to_decode] = toupper(*p);
+				if (chars_to_decode == 0)
+					tmp.push_back(decode(c[1], c[0]));
+			}
+			else if (*p == '=')
 			{
 				header = tmp;
 				tmp.clear();
@@ -207,8 +236,8 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 			}
 			else if (*p == '%')
 			{
-				tmp.push_back(decode(*(p+1), *(p+2)));
-				p+=2;
+				// Decode the next two characters in the stream
+				chars_to_decode = 2;
 			}
 			else
 			{
