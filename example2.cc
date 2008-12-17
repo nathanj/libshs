@@ -31,8 +31,8 @@ const unsigned int favicon_ico_len = 198;
 
 const char css[] =
 "body { font-family: verdana, sans-serif; padding: 10px; }"
-"h1   { border-bottom: 1px solid #ccc; }";
-
+"h1   { border-bottom: 1px solid #ccc; }"
+"pre  { background-color: #eee }";
 
 class MyHttpServer : public shs::HttpServer {
 protected:
@@ -53,6 +53,16 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 			"<head><link rel='stylesheet' href='/style.css' /></head>"
 			"<body>"
 			"<h1>SHS Test Application</h1>";
+
+		// Display the request headers
+		ss << "<p>Request headers:</p>";
+		ss << "<pre>";
+		for (shs::ssmap::const_iterator it = req.headers.begin();
+				it != req.headers.end(); ++it)
+		{
+			ss << "<b>" << it->first << "</b>: " << it->second << std::endl;
+		}
+		ss << "</pre>";
 
 		// Display the querystring
 		ss << "<p>GET parameters (if any):</p>";
