@@ -14,5 +14,5 @@ http-server.o: http-server.cc http-server.h socket.h
 socket.o: socket.cc socket.h
 
 clean:
-	rm -f *.o example1 example2
+	rm -f *.o *.a example1 example2
 
