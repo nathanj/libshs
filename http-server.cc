@@ -225,7 +225,7 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 void HttpServer::SendResponse(Socket &sock, const HttpResponse &resp)
 {
 	std::stringstream ss;
-	ss << "HTTP/1.0 " << resp.status << "\r\n";
+	ss << "HTTP/1.1 " << resp.status << "\r\n";
 	for (ssmap::const_iterator it = resp.headers.begin();
 			it != resp.headers.end(); ++it)
 	{
