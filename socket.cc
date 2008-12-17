@@ -5,6 +5,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <sstream>
 
 namespace shs {
 
@@ -25,13 +26,13 @@ bool Socket::create()
 	m_sock = socket ( AF_INET, SOCK_STREAM, 0 );
 
 	if ( ! is_valid() )
-		return false;
+		throw SocketException("Could not create socket.");
 
 	// TIME_WAIT - argh
 	int on = 1;
 	if ( setsockopt ( m_sock, SOL_SOCKET, SO_REUSEADDR,
 				( const char* ) &on, sizeof ( on ) ) == -1 )
-		return false;
+		throw SocketException("Could not set socket option.");
 
 	return true;
 }
@@ -40,7 +41,7 @@ bool Socket::bind ( const int port )
 {
 	if ( ! is_valid() )
 	{
-		return false;
+		throw SocketException("Could not create socket.");
 	}
 
 	m_addr.sin_family = AF_INET;
@@ -53,7 +54,9 @@ bool Socket::bind ( const int port )
 
 	if ( bind_return == -1 )
 	{
-		return false;
+		std::stringstream ss;
+		ss << "Could not bind to port " << port << ".";
+		throw std::runtime_error(ss.str());
 	}
 
 	return true;
@@ -63,14 +66,14 @@ bool Socket::listen() const
 {
 	if ( ! is_valid() )
 	{
-		return false;
+		throw SocketException("Could not create socket.");
 	}
 
 	int listen_return = ::listen ( m_sock, MAXCONNECTIONS );
 
 	if ( listen_return == -1 )
 	{
-		return false;
+		throw SocketException("Could not listen to socket.");
 	}
 
 	return true;
@@ -83,7 +86,7 @@ bool Socket::accept ( Socket& new_socket ) const
 			( sockaddr * ) &m_addr, ( socklen_t * ) &addr_length );
 
 	if ( new_socket.m_sock <= 0 )
-		return false;
+		throw SocketException("Socket could not be accepted.");
 	else
 		return true;
 }
@@ -93,7 +96,7 @@ bool Socket::send ( const std::string s ) const
 	int status = ::send ( m_sock, s.c_str(), s.size(), MSG_NOSIGNAL );
 	if ( status == -1 )
 	{
-		return false;
+		throw SocketException("Data could not be sent through socket.");
 	}
 	else
 	{
@@ -113,8 +116,7 @@ int Socket::recv ( std::string& s ) const
 
 	if ( status == -1 )
 	{
-		std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
-		return 0;
+		throw SocketException("Could not receive data through socket.");
 	}
 	else if ( status == 0 )
 	{
@@ -129,21 +131,23 @@ int Socket::recv ( std::string& s ) const
 
 bool Socket::connect ( const std::string host, const int port )
 {
-	if ( ! is_valid() ) return false;
+	if ( ! is_valid() )
+		throw SocketException("Could not create socket.");
 
 	m_addr.sin_family = AF_INET;
 	m_addr.sin_port = htons ( port );
 
 	int status = inet_pton ( AF_INET, host.c_str(), &m_addr.sin_addr );
 
-	if ( errno == EAFNOSUPPORT ) return false;
+	if ( errno == EAFNOSUPPORT )
+		throw SocketException("Could not convert ip address.");
 
 	status = ::connect ( m_sock, ( sockaddr * ) &m_addr, sizeof ( m_addr ) );
 
 	if ( status == 0 )
 		return true;
 	else
-		return false;
+		throw SocketException("Could not connect to host.");
 }
 
 void Socket::set_non_blocking ( const bool b )
