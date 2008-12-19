@@ -174,8 +174,8 @@ void HttpServer::FillHttpRequest(Socket &client_sock, HttpRequest &req)
 						gotten_headers = true;
 						tmp.clear();
 						// Fill in the body with any data that we have
-						while (p+1 != data.end())
-							body += *(++p);
+						while (++p != data.end())
+							body += *p;
 						break;
 					}
 					else
