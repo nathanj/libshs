@@ -279,42 +279,53 @@ void HttpServer::Serve(int port)
 		Socket client_sock;
 		socket.accept(client_sock);
 
-		HttpRequest req;
-		HttpResponse resp;
-		FillHttpRequest(client_sock, req);
+		pid_t pid = fork();
+
+		if (pid == -1)
+		{
+			std::cerr << "Could not fork." << std::endl;
+		}
+		else if (pid == 0)
+		{
+			HttpRequest req;
+			HttpResponse resp;
+			FillHttpRequest(client_sock, req);
 
 #if 0
-		std::cout << "Parsed: " << std::endl;
-		std::cout << req.method << std::endl;
-		std::cout << req.path << std::endl;
+			std::cout << "Parsed: " << std::endl;
+			std::cout << req.method << std::endl;
+			std::cout << req.path << std::endl;
 
-		std::cout << "querystring: " << req.querystring.size() << std::endl;
-		for (ssmap::const_iterator it = req.querystring.begin();
-				it != req.querystring.end(); ++it)
-		{
-			std::cout << it->first << ": " << it->second << std::endl;
-		}
-		for (ssmap::const_iterator it = req.headers.begin();
-				it != req.headers.end(); ++it)
-		{
-			std::cout << it->first << ": " << it->second << std::endl;
-		}
-		std::cout << "parameters: " << req.parameters.size() << std::endl;
-		for (ssmap::const_iterator it = req.parameters.begin();
-				it != req.parameters.end(); ++it)
-		{
-			std::cout << it->first << ": " << it->second << std::endl;
-		}
-		std::cout << "\n\n" << std::endl;
+			std::cout << "querystring: " << req.querystring.size() << std::endl;
+			for (ssmap::const_iterator it = req.querystring.begin();
+					it != req.querystring.end(); ++it)
+			{
+				std::cout << it->first << ": " << it->second << std::endl;
+			}
+			for (ssmap::const_iterator it = req.headers.begin();
+					it != req.headers.end(); ++it)
+			{
+				std::cout << it->first << ": " << it->second << std::endl;
+			}
+			std::cout << "parameters: " << req.parameters.size() << std::endl;
+			for (ssmap::const_iterator it = req.parameters.begin();
+					it != req.parameters.end(); ++it)
+			{
+				std::cout << it->first << ": " << it->second << std::endl;
+			}
+			std::cout << "\n\n" << std::endl;
 #endif
-		
-		// Add some default headers
-		resp.status = "200 OK";
-		resp.headers["Content-Type"] = "text/html; charset=UTF-8";
-		HandleResponse(req, resp);
-		resp.headers["Content-Length"] = tostring(resp.body.size());
 
-		SendResponse(client_sock, resp);
+			// Add some default headers
+			resp.status = "200 OK";
+			resp.headers["Content-Type"] = "text/html; charset=UTF-8";
+			HandleResponse(req, resp);
+			resp.headers["Content-Length"] = tostring(resp.body.size());
+
+			SendResponse(client_sock, resp);
+
+			return;
+		}
 	}
 }
 
