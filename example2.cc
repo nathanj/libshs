@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <ctime>
 
 #include "http-server.h"
 
@@ -34,6 +35,29 @@ const char css[] =
 "h1   { border-bottom: 1px solid #ccc; }"
 "pre  { background-color: #eee }";
 
+const char javascript[] =
+"function ajax(url, vars, callbackFunction) {"
+"  var request =  new XMLHttpRequest();"
+"  request.open('GET', url, true);"
+" "
+"  request.onreadystatechange = function() {"
+"    var done = 4, ok = 200;"
+"    if (request.readyState == done && request.status == ok) {"
+"      if (request.responseText) {"
+"        callbackFunction(request.responseText);"
+"      }"
+"    }"
+"  };"
+"  request.send(vars);"
+"}"
+"function get_time() {"
+"  document.getElementById('time').innerHTML = 'loading...';"
+"  ajax('/ajaxcall', '', function(response) {"
+"    document.getElementById('time').innerHTML = response;"
+"  });"
+"  return false;"
+"}";
+
 class MyHttpServer : public shs::HttpServer {
 protected:
 	virtual void HandleResponse(shs::HttpRequest &req,
@@ -50,12 +74,15 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 		// Display the header
 		ss <<
 			"<html>"
-			"<head><link rel='stylesheet' href='/style.css' /></head>"
+			"<head>"
+			"<link rel='stylesheet' href='/style.css' />"
+			"<script language='javascript' src='/script.js'></script>"
+			"</head>"
 			"<body>"
 			"<h1>SHS Test Application</h1>";
 
 		// Display the request headers
-		ss << "<p>Request headers:</p>";
+		ss << "<h2>Request headers:</h2>";
 		ss << "<pre>";
 		for (shs::ssmap::const_iterator it = req.headers.begin();
 				it != req.headers.end(); ++it)
@@ -65,7 +92,7 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 		ss << "</pre>";
 
 		// Display the querystring
-		ss << "<p>GET parameters (if any):</p>";
+		ss << "<h2>GET parameters (if any):</h2>";
 		ss << "<ul>";
 		for (shs::ssmap::const_iterator it = req.querystring.begin();
 				it != req.querystring.end(); ++it)
@@ -77,7 +104,7 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 		// Display the post parameters
 		if (req.method == "POST")
 		{
-			ss << "<p>POST parameters (if any):</p>";
+			ss << "<h2>POST parameters (if any):</h2>";
 			ss << "<ul>";
 			for (shs::ssmap::const_iterator it = req.parameters.begin();
 					it != req.parameters.end(); ++it)
@@ -89,6 +116,7 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 
 		// Display the form
 		ss <<
+			"<h2>Example POST</h2>"
 			"<form method='POST' action='/?submit' name='nameform'>"
 			"<p>Enter your name:"
 			"<input type='textbox' name='name' value='"
@@ -100,20 +128,43 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 			"<option value='c++'>C++</option>"
 			"<option value='python'>Python</option>"
 			"</select></p>"
-			"<p><input type='submit' value='Submit'></p>"
+			"<p><input type='submit' value='Submit' /></p>"
 			"</form>";
+
+		// Display the ajax test
+		ss <<
+			"<h2>Ajax Example</h2>"
+			"<p>"
+			"<input type='button' value='Get Time' onclick='get_time()' />"
+			"</p>"
+			"<p><span id='time'></span></p>";
 
 		ss << "</body></html>";
 	}
 	else if (req.path == "/style.css")
 	{
+		// Tell the browser to cache the stylesheet for 10 minutes (600
+		// seconds)
+		resp.headers["Cache-Control"] = "max-age=600";
 		resp.headers["Content-Type"] = "text/css";
 		ss << css;
+	}
+	else if (req.path == "/script.js")
+	{
+		resp.headers["Content-Type"] = "text/javascript";
+		ss << javascript;
 	}
 	else if (req.path == "/favicon.ico")
 	{
 		resp.headers["Content-Type"] = "image/x-icon";
 		ss << std::string(favicon_ico, favicon_ico+favicon_ico_len);
+	}
+	else if (req.path == "/ajaxcall")
+	{
+		resp.headers["Content-Type"] = "text/plain";
+		time_t t = time(NULL);
+		struct tm *tm = localtime(&t);
+		ss << asctime(tm);
 	}
 	else
 	{
