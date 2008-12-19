@@ -8,7 +8,30 @@
 
 namespace shs {
 
-typedef std::map<std::string, std::string> ssmap;
+template<class T>
+struct less_case_insensitive : std::binary_function<T,T,bool>
+{
+	inline bool operator()(const T& lhs, const T& rhs)
+	{
+		typename T::const_iterator i = lhs.begin();
+		typename T::const_iterator j = rhs.begin();
+
+		while (i != lhs.end() && j != rhs.end())
+		{
+			if (tolower(*i) < tolower(*j))
+				return true;
+			else if (tolower(*i) > tolower(*j))
+				return false;
+
+			i++;
+			j++;
+		}
+
+		return (j != rhs.end());
+	}
+};
+
+typedef std::map< std::string, std::string, less_case_insensitive<std::string> > ssmap;
 
 struct HttpRequest {
 	std::string method;
