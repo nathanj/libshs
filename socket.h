@@ -1,3 +1,6 @@
+// socket.h: Provides functionality for dealing with sockets.
+// Code taken from http://tldp.org/LDP/LG/issue74/tougher.html
+
 #ifndef __SHS_SOCKET_H__
 #define __SHS_SOCKET_H__
 

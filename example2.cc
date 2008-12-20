@@ -1,3 +1,5 @@
+// example2.cc: A SHS example with form posting.
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -5,8 +7,9 @@
 
 #include "http-server.h"
 
-// Here I am hardcoding the favicon and stylesheet into the program. Of course,
-// these files can be read from the hard drive every request instead.
+// Here I am hardcoding the favicon, stylesheet, and javascript into the
+// program. Of course, these files can be read from the hard drive every
+// request instead.
 
 // Generated with 'xxd -i favicon.ico'
 const unsigned char favicon_ico[] = {

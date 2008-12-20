@@ -1,3 +1,5 @@
+// http-server.cc: A forking HTTP server.
+
 #include "http-server.h"
 
 #include <iostream>

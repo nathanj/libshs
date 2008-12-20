@@ -1,3 +1,6 @@
+// socket.cc: Provides functionality for dealing with sockets.
+// Code taken from http://tldp.org/LDP/LG/issue74/tougher.html
+
 #include "socket.h"
 
 #include <errno.h>

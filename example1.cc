@@ -1,9 +1,13 @@
+// example1.cc: A hello world SHS example.
+
 #include <iostream>
 #include <string>
 #include <sstream>
 
 #include "http-server.h"
 
+// To create a HTTP server, inherit from shs::HttpServer and override the
+// HandleResponse method.
 class MyHttpServer : public shs::HttpServer {
 protected:
 	virtual void HandleResponse(shs::HttpRequest &req,
@@ -18,6 +22,7 @@ void MyHttpServer::HandleResponse(shs::HttpRequest &req,
 
 int main(int argc, char **argv)
 {
+	// Create the server and start listening on port 9999.
 	MyHttpServer server;
 	server.Serve(9999);
 
