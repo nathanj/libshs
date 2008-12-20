@@ -50,6 +50,7 @@ class SocketException : public std::runtime_error
 {
 public:
 	SocketException(const char *str) : std::runtime_error(str) {}
+	SocketException(const std::string &str) : std::runtime_error(str) {}
 };
 
 } // namespace shs

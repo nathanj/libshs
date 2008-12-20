@@ -56,7 +56,7 @@ bool Socket::bind ( const int port )
 	{
 		std::stringstream ss;
 		ss << "Could not bind to port " << port << ".";
-		throw std::runtime_error(ss.str());
+		throw SocketException(ss.str());
 	}
 
 	return true;
