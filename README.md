@@ -39,6 +39,6 @@ Portability
 I have only tested on Linux. Other operating systems may or may not work.
 Patches are welcome.
 
-  [1]: http://github.com/nathanj/tree/master/src/examples/example1.cc
-  [2]: http://github.com/nathanj/tree/master/src/examples/example2.cc
+  [1]: http://github.com/nathanj/libshs/tree/master/src/examples/example1.cc
+  [2]: http://github.com/nathanj/libshs/tree/master/src/examples/example2.cc
 
