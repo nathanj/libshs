@@ -1,4 +1,6 @@
 // http-server.cc: A forking HTTP server.
+//
+// Copyright (c) 2008, Nathan Jones <nathanj@insightbb.com>
 
 #include "http-server.h"
 

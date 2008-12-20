@@ -1,4 +1,6 @@
 // http-server.h: A forking HTTP server.
+//
+// Copyright (c) 2008, Nathan Jones <nathanj@insightbb.com>
 
 #ifndef __SHS_HTTP_SERVER_H__
 #define __SHS_HTTP_SERVER_H__
