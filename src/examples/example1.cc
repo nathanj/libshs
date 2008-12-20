@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#include "http-server.h"
+#include <shs/http-server.h>
 
 // To create a HTTP server, inherit from shs::HttpServer and override the
 // HandleResponse method.

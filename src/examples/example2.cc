@@ -5,7 +5,7 @@
 #include <sstream>
 #include <ctime>
 
-#include "http-server.h"
+#include <shs/http-server.h>
 
 // Here I am hardcoding the favicon, stylesheet, and javascript into the
 // program. Of course, these files can be read from the hard drive every
