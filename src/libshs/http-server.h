@@ -37,7 +37,8 @@ struct less_case_insensitive : std::binary_function<T,T,bool>
 };
 
 /// A map from string to string using case insensitive comparisons.
-typedef std::map< std::string, std::string, less_case_insensitive<std::string> > ssmap;
+typedef std::map< std::string, std::string,
+		less_case_insensitive<std::string> > ssmap;
 
 /// Contains HTTP request information.
 struct HttpRequest {
