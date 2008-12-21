@@ -4,6 +4,8 @@
 
 #include "http-server.h"
 
+#include <sys/wait.h>
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -329,6 +331,12 @@ void HttpServer::Serve(int port)
 			SendResponse(client_sock, resp);
 
 			return;
+		}
+		else
+		{
+			// Clean up finished child processes
+			while (waitpid(0, NULL, WNOHANG) > 0)
+				;
 		}
 	}
 }
