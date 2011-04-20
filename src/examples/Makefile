@@ -1,10 +1,10 @@
 CC=g++
 CPPFLAGS=-I.. -Wall -ansi -Os
-LDLIBS=-L../libshs -lshs
+LDLIBS=-L../shs -lshs
 
 all: example1 example2
-example1.o: example1.cc ../libshs/libshs.a
-example2.o: example2.cc ../libshs/libshs.a
+example1.o: example1.cc ../shs/libshs.a
+example2.o: example2.cc ../shs/libshs.a
 
 install:
 

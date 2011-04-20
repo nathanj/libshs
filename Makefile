@@ -1,12 +1,12 @@
 all:
-	cd src/libshs; $(MAKE) all
+	cd src/shs; $(MAKE) all
 	cd src/examples; $(MAKE) all
 
 install:
-	cd src/libshs; $(MAKE) install
+	cd src/shs; $(MAKE) install
 	cd src/examples; $(MAKE) install
 
 clean:
-	cd src/libshs; $(MAKE) clean
+	cd src/shs; $(MAKE) clean
 	cd src/examples; $(MAKE) clean
 
